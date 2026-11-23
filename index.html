@@ -398,9 +398,10 @@
                 </p>
 
                 <div class="bg-white p-2 sm:p-3 rounded-3xl shadow-xl border border-rose-100">
-                    <div class="relative w-full overflow-hidden rounded-2xl" style="padding-top: 56.25%;">
+                    <div class="relative w-full overflow-hidden rounded-2xl bg-rose-50 min-h-[260px] sm:min-h-[360px]" style="padding-top: 80%;">
                         <iframe id="drivePlayer"
                             class="absolute top-0 left-0 w-full h-full"
+                            style="filter: brightness(1.32) contrast(1.14);"
                             src=""
                             title="Video dedicado"
                             frameborder="0"
@@ -470,14 +471,12 @@
          */
         const CONFIG = {
             // --- Datos de la pareja ---
-            nombreElla: "Mi Jasmin", // Aparecerá en el saludo principal si no escribe su nombre
+            nombreElla: "Mi Jasmin",
             tituloLogin: "Bienvenida, Mi Jasmin 💖",
             subtituloLogin: "Responde estas 4 preguntitas para desbloquear tu regalo",
 
             // --- Preguntas y respuestas de la pantalla inicial ---
-            // Nota: La validación ignora mayúsculas/minúsculas y espacios extras.
-            // Si pones respuesta: "" (vacío), aceptará cualquier texto que ella escriba.
-            validarRespuestasEstrictamente: true, // Cambia a true si quieres que deba acertar exactamente
+            validarRespuestasEstrictamente: true,
             preguntas: [
                 {
                     etiqueta: "Escribe tu nombre",
@@ -506,7 +505,6 @@
             ],
 
             // --- Fecha de inicio de la relación (Formato: "AAAA-MM-DDTHH:MM:SS") ---
-            // Ejemplo: "2021-03-15T18:00:00"
             fechaInicio: "2024-09-02T00:00:00",
             textoFechaBanner: "✨ 02 de setiembre del 2024 — El inicio de todo ✨",
             tituloPrincipal: "FELIZ DE SEGUIR A TU LADO ❤️",
@@ -516,13 +514,12 @@
             cartaTitulo: "Para la mujer que sigo amando,",
             cartaTexto: `Desde que Dios te puso en mi camino aquel día en el trabajo, mi vida cambio por completo porque desde que te vi supe que llegarías a formar parte de mi vida. Me enamoro tu voz, tu risa, tu mirada que se volvieron mi fuente de inspiración para escribir las palabras mas hermosas para tí.
 
-Cada día que pasamos juntos aunque no te des cuenta es un día donde escribimos una capitulo mas a nuestras vidas, que esta llena de apoyos, alegrías, conversaciones, bromas y muchas cosas mas que enamoran.
+Cada día que pasamos juntos aunque no te des cuenta es un día donde escribimos un capitulo mas a nuestras vidas, que esta llena de apoyos, alegrías, conversaciones, bromas y muchas cosas mas que enamoran.
 
 Gracias por ser tú, por tu paciencia, por tu ternura y por elegirme cada día. Te amo más allá de lo que las palabras pueden expresar.`,
             cartaFirma: "Contigo quiero estar siempre... ❤️",
 
             // --- Galería de Fotos ---
-            // Puedes reemplazar "url" por rutas locales como "fotos/foto1.jpg" o enlaces de internet.
             fotos: [
                 {
                     url: "https://lh3.googleusercontent.com/d/1LqlFI7nRHW1vJM4VjmINyv9YNmodhrXf",
@@ -546,7 +543,7 @@ Gracias por ser tú, por tu paciencia, por tu ternura y por elegirme cada día. 
             timeline: [
                 {
                     icono: "👫🏻",
-                    titulo: "Nos conoocimos por primera vez",
+                    titulo: "Nos conocimos por primera vez",
                     fecha: "07 de Agosto, 2024",
                     detalle: "El día en que nuestras miradas se cruzaron y empezó esta hermosa historia, fue en el trabajo, en el recorrido 🥰."
                 },
@@ -577,13 +574,11 @@ Gracias por ser tú, por tu paciencia, por tu ternura y por elegirme cada día. 
             ],
 
             // --- Video dedicado (Google Drive) ---
-            // Se utiliza el enlace de vista previa (/preview) del video alojado en Google Drive.
             videoTitulo: "Esta canción es dedicada para ti 🎶",
             videoSubtitulo: "Cada letra me recuerda lo afortunado que soy de tenerte",
             drivePreviewUrl: "https://drive.google.com/file/d/1pRAv2vx_7Ubu_F8zgWT9Yfhw5YXR9Hz0/preview",
 
             // --- WhatsApp para recibir su respuesta ---
-            // Escribe tu número con código de país, SIN signo "+" ni espacios (Ej. Perú: "51987654321")
             whatsappNumero: "51961210490",
             whatsappMensajeSugerido: "Gracias David ❤️ ¡Me encantó la sorpresa!"
         };
@@ -603,7 +598,15 @@ Gracias por ser tú, por tu paciencia, por tu ternura y por elegirme cada día. 
             configurarWhatsApp();
         });
 
-        // Crea corazones sutiles flotando en el fondo
+        function normalizarTexto(texto) {
+            return (texto || "")
+                .toString()
+                .trim()
+                .toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "");
+        }
+
         function iniciarCorazonesFlotantes() {
             const container = document.getElementById("heartsContainer");
             const simbolos = ["❤️", "💖", "💕", "💗", "🌸"];
@@ -621,7 +624,18 @@ Gracias por ser tú, por tu paciencia, por tu ternura y por elegirme cada día. 
             }
         }
 
-        // Configura los textos y validación de la pantalla de bienvenida
+        function desbloquearContenido(nombreIngresado) {
+            const nombreLimpio = (nombreIngresado || "").trim();
+            if (nombreLimpio) {
+                document.getElementById("displayPartnerName").textContent = nombreLimpio;
+            } else {
+                document.getElementById("displayPartnerName").textContent = CONFIG.nombreElla;
+            }
+            document.getElementById("loginScreen").classList.add("hidden");
+            document.getElementById("mainContent").classList.remove("hidden");
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+
         function configurarLogin() {
             document.getElementById("loginTitle").textContent = CONFIG.tituloLogin;
             document.getElementById("loginSubtitle").textContent = CONFIG.subtituloLogin;
@@ -644,146 +658,97 @@ Gracias por ser tú, por tu paciencia, por tu ternura y por elegirme cada día. 
                 e.preventDefault();
                 feedback.classList.add("hidden");
 
-                const respuestasUsuario = [
-                    document.getElementById("inputQ1").value.trim(),
-                    document.getElementById("inputQ2").value.trim(),
-                    document.getElementById("inputQ3").value.trim(),
-                    document.getElementById("inputQ4").value.trim()
-                ];
+                const respuestasUsuario = CONFIG.preguntas.map((_, idx) => {
+                    const input = document.getElementById(`inputQ${idx + 1}`);
+                    return input ? input.value : "";
+                });
 
                 if (CONFIG.validarRespuestasEstrictamente) {
                     for (let i = 0; i < CONFIG.preguntas.length; i++) {
-                        const esperada = CONFIG.preguntas[i].respuesta.trim().toLowerCase();
-                        const dada = respuestasUsuario[i].toLowerCase();
-
-                        if (esperada !== "" && dada !== esperada) {
-                            feedback.textContent = `Casi amor 💕 Revisa la pregunta ${i + 1} (${CONFIG.preguntas[i].etiqueta}). Pista: ${CONFIG.preguntas[i].pista}`;
+                        const esperada = normalizarTexto(CONFIG.preguntas[i].respuesta);
+                        const actual = normalizarTexto(respuestasUsuario[i]);
+                        if (esperada && actual !== esperada) {
+                            feedback.textContent = `Pista en la pregunta ${i + 1}: ${CONFIG.preguntas[i].pista}`;
                             feedback.classList.remove("hidden");
                             return;
                         }
                     }
                 }
 
-                // Si escribió su nombre en la primera pregunta, lo usamos en el saludo
-                if (respuestasUsuario[0]) {
-                    document.getElementById("displayPartnerName").textContent = respuestasUsuario[0];
-                }
-
-                desbloquearContenido();
+                desbloquearContenido(respuestasUsuario[0]);
             });
 
             skipBtn.addEventListener("click", () => {
-                const nombreIngresado = document.getElementById("inputQ1").value.trim();
-                if (nombreIngresado) {
-                    document.getElementById("displayPartnerName").textContent = nombreIngresado;
-                }
-                desbloquearContenido();
+                const firstVal = document.getElementById("inputQ1")?.value || "";
+                desbloquearContenido(firstVal);
             });
         }
 
-        function desbloquearContenido() {
-            const loginScreen = document.getElementById("loginScreen");
-            const mainContent = document.getElementById("mainContent");
-
-            loginScreen.style.transition = "opacity 0.45s ease";
-            loginScreen.style.opacity = "0";
-
-            setTimeout(() => {
-                loginScreen.classList.add("hidden");
-                mainContent.classList.remove("hidden");
-                window.scrollTo({ top: 0, behavior: "smooth" });
-            }, 450);
-        }
-
-        // Carga textos, carta, fotos, timeline y video de Google Drive desde CONFIG
         function cargarContenidoPrincipal() {
             document.getElementById("topDateBanner").textContent = CONFIG.textoFechaBanner;
             document.getElementById("displayPartnerName").textContent = CONFIG.nombreElla;
             document.getElementById("mainHeroTitle").textContent = CONFIG.tituloPrincipal;
             document.getElementById("mainHeroSubtitle").textContent = CONFIG.subtituloPrincipal;
 
-            // Carta
             document.getElementById("letterHeading").textContent = CONFIG.cartaTitulo;
             document.getElementById("letterBody").textContent = CONFIG.cartaTexto;
             document.getElementById("letterSignature").textContent = CONFIG.cartaFirma;
 
-            // Galería de fotos
             const galleryGrid = document.getElementById("photoGalleryGrid");
             galleryGrid.innerHTML = "";
-            CONFIG.fotos.forEach((foto, index) => {
+            CONFIG.fotos.forEach((foto) => {
                 const card = document.createElement("div");
                 card.className = "polaroid cursor-pointer flex flex-col justify-between";
                 card.innerHTML = `
-                    <div class="aspect-[4/5] w-full overflow-hidden rounded-xl bg-rose-50">
-                        <img src="${foto.url}" alt="Recuerdo ${index + 1}" loading="lazy"
-                            class="w-full h-full object-cover hover:scale-105 transition duration-500">
-                    </div>
-                    <p class="text-xs text-center text-rose-900/80 font-medium mt-3 line-clamp-2">
-                        ${foto.descripcion}
-                    </p>
+                    <img src="${foto.url}" alt="${foto.descripcion}" class="w-full h-36 sm:h-44 object-cover rounded-xl mb-2">
+                    <p class="text-xs text-rose-900/80 font-medium text-center leading-snug">${foto.descripcion}</p>
                 `;
                 card.addEventListener("click", () => abrirModalFoto(foto.url, foto.descripcion));
                 galleryGrid.appendChild(card);
             });
 
-            // Línea de tiempo
             const timelineContainer = document.getElementById("timelineContainer");
             timelineContainer.innerHTML = "";
             CONFIG.timeline.forEach((item) => {
-                const milestone = document.createElement("div");
-                milestone.className = "relative bg-white/90 backdrop-blur rounded-2xl p-4 sm:p-5 shadow-md border border-rose-100";
-                milestone.innerHTML = `
+                const hito = document.createElement("div");
+                hito.className = "relative bg-white/90 backdrop-blur rounded-2xl p-4 sm:p-5 shadow-md border border-rose-100";
+                hito.innerHTML = `
                     <span class="absolute -left-[35px] sm:-left-[43px] top-5 w-8 h-8 rounded-full bg-rose-100 border-2 border-rose-400 flex items-center justify-center text-sm shadow-sm">
                         ${item.icono}
                     </span>
-                    <span class="inline-block text-[11px] font-semibold uppercase tracking-wider text-rose-500 bg-rose-50 px-2.5 py-0.5 rounded-full mb-1">
-                        ${item.fecha}
-                    </span>
-                    <h4 class="text-base sm:text-lg font-bold text-rose-950">
-                        ${item.titulo}
-                    </h4>
-                    <p class="text-xs sm:text-sm text-rose-900/75 mt-1 leading-relaxed">
-                        ${item.detalle}
-                    </p>
+                    <span class="inline-block text-xs font-semibold text-rose-500 uppercase tracking-wider">${item.fecha}</span>
+                    <h4 class="text-base sm:text-lg font-bold text-rose-900 mt-0.5">${item.titulo}</h4>
+                    <p class="text-xs sm:text-sm text-rose-900/75 mt-1 leading-relaxed">${item.detalle}</p>
                 `;
-                timelineContainer.appendChild(milestone);
+                timelineContainer.appendChild(hito);
             });
 
-            // Video de Google Drive
             document.getElementById("videoTitle").textContent = CONFIG.videoTitulo;
             document.getElementById("videoSubtitle").textContent = CONFIG.videoSubtitulo;
             const drivePlayer = document.getElementById("drivePlayer");
-            if (CONFIG.drivePreviewUrl) {
+            if (drivePlayer && CONFIG.drivePreviewUrl) {
                 drivePlayer.src = CONFIG.drivePreviewUrl;
             }
 
-            // Mensaje sugerido de WhatsApp
             const waInput = document.getElementById("whatsappMessageInput");
-            if (CONFIG.whatsappMensajeSugerido) {
+            if (waInput && CONFIG.whatsappMensajeSugerido) {
                 waInput.value = CONFIG.whatsappMensajeSugerido;
             }
         }
 
-        // Contador en vivo desde la fecha de inicio configurada
         function iniciarContadorTiempo() {
             const inicio = new Date(CONFIG.fechaInicio).getTime();
 
             function actualizar() {
-                const ahora = new Date().getTime();
-                let diferencia = Math.max(0, ahora - inicio);
+                const ahora = Date.now();
+                const diff = Math.max(0, ahora - inicio);
 
-                const dias = Math.floor(diferencia / (1000 * 60 * 60 * 24));
-                diferencia %= (1000 * 60 * 60 * 24);
+                const dias = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const horas = Math.floor((diff / (1000 * 60 * 60)) % 24);
+                const minutos = Math.floor((diff / (1000 * 60)) % 60);
+                const segundos = Math.floor((diff / 1000) % 60);
 
-                const horas = Math.floor(diferencia / (1000 * 60 * 60));
-                diferencia %= (1000 * 60 * 60);
-
-                const minutos = Math.floor(diferencia / (1000 * 60));
-                diferencia %= (1000 * 60);
-
-                const segundos = Math.floor(diferencia / 1000);
-
-                document.getElementById("countDays").textContent = dias.toLocaleString("es-PE");
+                document.getElementById("countDays").textContent = dias;
                 document.getElementById("countHours").textContent = String(horas).padStart(2, "0");
                 document.getElementById("countMinutes").textContent = String(minutos).padStart(2, "0");
                 document.getElementById("countSeconds").textContent = String(segundos).padStart(2, "0");
@@ -793,7 +758,6 @@ Gracias por ser tú, por tu paciencia, por tu ternura y por elegirme cada día. 
             setInterval(actualizar, 1000);
         }
 
-        // Lógica del sobre interactivo y despliegue de la carta
         function configurarSobre() {
             const envelopeBox = document.getElementById("envelopeBox");
             const openBtn = document.getElementById("openLetterBtn");
@@ -814,32 +778,9 @@ Gracias por ser tú, por tu paciencia, por tu ternura y por elegirme cada día. 
                 openBtn.classList.remove("hidden");
             }
 
-            envelopeBox.addEventListener("click", () => {
-                if (letterPaper.classList.contains("show")) {
-                    cerrarCarta();
-                } else {
-                    abrirCarta();
-                }
-            });
-
             openBtn.addEventListener("click", abrirCarta);
+            envelopeBox.addEventListener("click", abrirCarta);
             closeBtn.addEventListener("click", cerrarCarta);
-        }
-
-        // Modal para ampliar fotos
-        function configurarModalFotos() {
-            const modal = document.getElementById("photoModal");
-            const closeBtn = document.getElementById("closeModalBtn");
-
-            closeBtn.addEventListener("click", () => {
-                modal.classList.add("hidden");
-            });
-
-            modal.addEventListener("click", (e) => {
-                if (e.target === modal) {
-                    modal.classList.add("hidden");
-                }
-            });
         }
 
         function abrirModalFoto(url, caption) {
@@ -849,15 +790,26 @@ Gracias por ser tú, por tu paciencia, por tu ternura y por elegirme cada día. 
             modal.classList.remove("hidden");
         }
 
-        // Envío directo a WhatsApp con el mensaje redactado por ella
+        function configurarModalFotos() {
+            const modal = document.getElementById("photoModal");
+            const closeBtn = document.getElementById("closeModalBtn");
+
+            closeBtn.addEventListener("click", () => modal.classList.add("hidden"));
+            modal.addEventListener("click", (e) => {
+                if (e.target === modal) {
+                    modal.classList.add("hidden");
+                }
+            });
+        }
+
         function configurarWhatsApp() {
             const btn = document.getElementById("sendWhatsappBtn");
-            const textarea = document.getElementById("whatsappMessageInput");
+            const input = document.getElementById("whatsappMessageInput");
 
             btn.addEventListener("click", () => {
-                const texto = textarea.value.trim() || CONFIG.whatsappMensajeSugerido || "¡Me encantó!";
-                const numeroLimpio = CONFIG.whatsappNumero.replace(/\D/g, "");
-                const url = `https://wa.me/${numeroLimpio}?text=${encodeURIComponent(texto)}`;
+                const texto = (input.value || CONFIG.whatsappMensajeSugerido || "").trim();
+                const numero = (CONFIG.whatsappNumero || "").replace(/\D/g, "");
+                const url = `https://wa.me/${numero}?text=${encodeURIComponent(texto)}`;
                 window.open(url, "_blank", "noopener,noreferrer");
             });
         }
